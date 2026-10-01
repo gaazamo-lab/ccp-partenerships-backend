@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 130
+target-version = "py314"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "BLE"]
+# UP046: pydantic generic envelopes keep the explicit Generic[T] form.
+ignore = ["B008", "S101", "UP046"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106"]
+"scripts/seed.py" = ["E501"]  # demo data literals

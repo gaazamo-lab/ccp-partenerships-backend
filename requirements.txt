@@ -1,0 +1,33 @@
+# Partner CRM backend — runtime dependencies.
+#
+# Every dependency is pinned with `==` on purpose (same policy as the S074
+# comms-service): builds must be reproducible, and upgrades arrive through
+# reviewed dependency PRs rather than silently at image-build time.
+
+# ── Web ──
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+
+# ── Settings & validation ──
+pydantic==2.13.4
+pydantic-settings==2.15.0
+email-validator==2.3.0
+
+# ── Database ──
+sqlalchemy==2.0.52
+asyncpg==0.31.0
+psycopg2-binary==2.9.12
+alembic==1.19.1
+
+# ── Queue ──
+celery[redis]==5.6.3
+redis==6.4.0
+
+# ── Auth ──
+# Argon2id password hashing (OWASP-recommended); sessions are opaque DB-backed
+# tokens, so no JWT library is needed.
+argon2-cffi==25.1.0
+
+# ── Integrations & exports ──
+httpx==0.28.1
+openpyxl==3.1.5

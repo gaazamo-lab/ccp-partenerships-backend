@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev, staging]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pcrm
+          POSTGRES_PASSWORD: pcrm
+          POSTGRES_DB: pcrm_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pcrm" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://pcrm:pcrm@localhost:5432/pcrm_test
+      TEST_DATABASE_URL: postgresql+asyncpg://pcrm:pcrm@localhost:5432/pcrm_test
+      ENV: dev
+      SESSION_COOKIE_SECURE: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: alembic upgrade head && alembic check
+      - run: pytest -q --cov=app --cov-report=xml
+      - run: bandit -q -r app -x tests
+      - run: pip-audit -r requirements.txt
